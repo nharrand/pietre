@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Pietre interprète</title>
+    <meta charset="UTF-8" />
+    <script src="./test.js">
+    </script>
+    <script src="./dist/pietre.js">
+    </script>
+  </head>
+  <body>
+    <script>
+
+        console.log("hello");
+        hello();
+        test();
+
+        function runFunction() {
+            // Get the values of the path and input fields
+            const path = document.getElementById("path").value;
+            const input = document.getElementById("input").value;
+
+            // Call your function with the values as parameters
+            displayEnlargedImage(path, 10);
+        }
+    </script>
+    <h1>Pietre interprète</h1>
+    <form>
+        <label for="path">Path:</label>
+        <input type="text" id="path" name="path"><br>
+  
+        <label for="input">Input:</label>
+        <input type="text" id="input" name="input"><br>
+  
+        <button type="button" onclick="runFunction()">Run</button>
+      </form>
+  </body>
+</html>
