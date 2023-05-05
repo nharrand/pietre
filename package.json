@@ -5,15 +5,17 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc",
+    "browser": "tsc -p tsconfig.browser.json",
     "test": "mocha --require ts-node/register 'test/**/*.spec.ts'"
   },
   "keywords": [],
-  "author": "",
+  "author": "Nicolas Harrand",
   "license": "ISC",
   "devDependencies": {
     "@types/mocha": "^10.0.1",
     "@types/node": "^18.16.3",
     "chai": "^4.3.7",
+    "jimp": "^0.22.7",
     "mocha": "^10.2.0",
     "ts-node": "^10.9.1",
     "typescript": "^5.0.4"

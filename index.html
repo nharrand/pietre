@@ -3,25 +3,57 @@
   <head>
     <title>Pietre interprète</title>
     <meta charset="UTF-8" />
-    <script src="./test.js">
-    </script>
-    <script src="./dist/pietre.js">
+    <script src="./dist.browser/pietre.js">
     </script>
   </head>
   <body>
     <script>
 
         console.log("hello");
-        hello();
-        test();
 
         function runFunction() {
-            // Get the values of the path and input fields
             const path = document.getElementById("path").value;
             const input = document.getElementById("input").value;
+            const canvas = document.getElementById("canvas");
 
-            // Call your function with the values as parameters
-            displayEnlargedImage(path, 10);
+
+            const img = new Image();
+            img.src = path;
+            img.crossOrigin = "anonymous";
+            var rawData = [];
+
+            img.onload = () => {
+                canvas.width = img.width;
+                canvas.height = img.height;
+                // Get the 2D context of the canvas
+                const ctx = canvas.getContext("2d");
+                // Draw the image onto the canvas
+                ctx.drawImage(img, 0, 0);
+
+                // Get the pixel data for the canvas
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+                console.log("Pixel 0,0 -> " + imageData.data[0] + ", " + imageData.data[1] + ", " + imageData.data[2] + ", " + imageData.data[3]);
+
+                
+                console.log("Hey");
+
+                for(let i = 0; i < img.height; i++) {
+                    rawData[i] = [];
+                    for(let j = 0; j < img.width; j++) {
+                        var r,g,b;
+                        r = imageData.data[4*(i * img.width + j)];
+                        g = imageData.data[4*(i * img.width + j) + 1];
+                        b = imageData.data[4*(i * img.width + j) + 2];
+                        rawData[i][j] = r * 256 * 256 + g * 256 + b;
+
+                    }
+                }
+
+                console.log("p 0,0 -> " + rawData[0][0]);
+            };
+
+
         }
     </script>
     <h1>Pietre interprète</h1>
@@ -34,5 +66,6 @@
   
         <button type="button" onclick="runFunction()">Run</button>
       </form>
+      <canvas id="canvas"></canvas>
   </body>
 </html>
