@@ -33,7 +33,7 @@ export class Line {
   elements: LineElement[] = [];
 }
 
-export const Black = new Block(0,0);
+export const Black = new Block(-1,0);
 
 export function getBlockFromX(x : number, l: Line): Block {
   for(var el of l.elements) {
@@ -42,11 +42,6 @@ export function getBlockFromX(x : number, l: Line): Block {
     }
   }
   return Black;
-}
-
-export function extend(x: number, y: number, b: Block) {
-  if (b == Black) return;
-  b.value++;
 }
 
 export function replaceLinks(replaced: Block, replacement: Block) {
@@ -261,17 +256,17 @@ export function printProgram(p: Program) {
     console.log(" - color: " + block.color);
     console.log(" - value: " + block.value);
     console.log(" - margins: ");
-    console.log("   - up 0: " + block.margins.up + " -> (c: " + block.up[0].color + ", v: " + block.up[0].value + ")");
-    console.log("   - up 1: " + block.margins.up + " -> (c: " + block.up[1].color + ", v: " + block.up[1].value + ")");
+    console.log("   - up    0: " + block.margins.up + " -> (c: " + block.up[0].color + ", v: " + block.up[0].value + ")");
+    console.log("   - up    1: " + block.margins.up + " -> (c: " + block.up[1].color + ", v: " + block.up[1].value + ")");
 
     console.log("   - right 0: " + block.margins.right + " -> (c: " + block.right[0].color + ", v: " + block.right[0].value + ")");
     console.log("   - right 1: " + block.margins.right + " -> (c: " + block.right[1].color + ", v: " + block.right[1].value + ")");
 
-    console.log("   - down 0: " + block.margins.down + " -> (c: " + block.down[0].color + ", v: " + block.down[0].value + ")");
-    console.log("   - down 1: " + block.margins.down + " -> (c: " + block.down[1].color + ", v: " + block.down[1].value + ")");
+    console.log("   - down  0: " + block.margins.down + " -> (c: " + block.down[0].color + ", v: " + block.down[0].value + ")");
+    console.log("   - down  1: " + block.margins.down + " -> (c: " + block.down[1].color + ", v: " + block.down[1].value + ")");
 
-    console.log("   - left 0: " + block.margins.left + " -> (c: " + block.left[0].color + ", v: " + block.left[0].value + ")");
-    console.log("   - left 1: " + block.margins.left + " -> (c: " + block.left[1].color + ", v: " + block.left[1].value + ")");
+    console.log("   - left  0: " + block.margins.left + " -> (c: " + block.left[0].color + ", v: " + block.left[0].value + ")");
+    console.log("   - left  1: " + block.margins.left + " -> (c: " + block.left[1].color + ", v: " + block.left[1].value + ")");
     
   }
 }

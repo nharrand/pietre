@@ -22,6 +22,22 @@ describe('testJimp', () => {
 
 
 
+describe('5x5 pixels w/ black -> 25 blocks test', () => {
+  it('should return a program with 6 non black block', () => {
+    var data: number[][] = [
+      [1,1,0,1,1],
+      [1,0,2,0,1],
+      [0,2,2,2,0],
+      [0,0,3,0,0],
+      [3,3,3,3,3]
+    ];
+    var w: number = 5;
+    var h: number = 5;
+    const p = Pietre.parseProgram(data, w, h);
+    Pietre.printProgram(p);
+    expect(p.blocks.length).to.equal(9);
+  });
+});
 
 describe('6x6 pixels -> 36 blocks test', () => {
   it('should return a program with 13 non black block', () => {
@@ -36,7 +52,7 @@ describe('6x6 pixels -> 36 blocks test', () => {
     var w: number = 6;
     var h: number = 6;
     const p = Pietre.parseProgram(data, w, h);
-    Pietre.printProgram(p);
+    //Pietre.printProgram(p);
     expect(p.blocks.length).to.equal(13);
   });
 });
