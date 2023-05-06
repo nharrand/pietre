@@ -1,25 +1,32 @@
 import { expect } from 'chai';
-import * as Pietre from '../src/pietre';
-//import { Jimp } from 'jimp';
-import Jimp = require("jimp");
+import * as Pietre from '../src/programGraph';
 
-describe('sampleFunction', () => {
-  it('should return the input value', () => {
-    const input = 'Hello World!';
-    const result = Pietre.sampleFunction(input);
-    expect(result).to.equal(input);
+
+
+describe('11x11 pixels w/ black -> 7 blocks test', () => {
+  it('should return a program with 7 non black block', () => {
+    var data: number[][] = [
+      [1,1,1,1,1,1,1,1,1,1,1],
+      [1,1,1,1,1,1,1,1,2,2,2],
+      [1,1,1,1,1,1,1,1,2,2,3],
+      [1,1,1,1,1,1,1,2,2,3,3],
+      [1,1,1,1,1,1,1,2,2,3,3],
+      [1,1,1,1,1,1,3,3,3,3,3],
+      [1,1,1,1,0,1,1,3,3,3,3],
+      [1,1,1,0,1,0,1,1,3,3,3],
+      [1,1,0,1,1,1,0,1,3,3,3],
+      [1,1,1,0,4,0,1,1,1,3,3],
+      [5,5,5,5,5,1,1,1,1,1,6],
+      [5,5,5,5,5,6,6,6,6,6,6],
+    ];
+    var w: number = 11;
+    var h: number = 11;
+    var p = Pietre.parseProgram(data, w, h);
+    Pietre.unifyBlackBlocks(p);
+    Pietre.printProgram(p);
+    expect(p.blocks.length).to.equal(7);
   });
 });
-
-
-describe('testJimp', () => {
-  it('should read height and width of an image', () => {
-    Jimp.read("input-programs/Piet_hello.png", function (err, image) {
-      console.log("Image: " + image.bitmap.height + "x" + image.bitmap.width);
-    });
-  });
-});
-
 
 
 describe('5x5 pixels w/ black -> 25 blocks test', () => {
@@ -34,7 +41,7 @@ describe('5x5 pixels w/ black -> 25 blocks test', () => {
     var w: number = 5;
     var h: number = 5;
     const p = Pietre.parseProgram(data, w, h);
-    Pietre.printProgram(p);
+    //Pietre.printProgram(p);
     expect(p.blocks.length).to.equal(9);
   });
 });
