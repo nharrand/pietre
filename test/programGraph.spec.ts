@@ -2,6 +2,66 @@ import { expect } from 'chai';
 import * as Pietre from '../src/programGraph';
 
 
+describe('5x25 pixels w/ black -> 125 blocks test', () => {
+  it('should return a program with a main block with a value of 72 ', () => {
+    var data: number[][] = [
+      [1,1,1,1,1],
+      [1,1,1,1,1],
+      [1,1,0,1,1],
+      [1,0,2,0,1],
+      [1,2,3,2,1],
+      [1,0,2,0,1],
+      [1,1,0,1,1],
+      [1,4,1,4,1],
+      [1,5,4,5,1],
+      [1,4,1,4,1],
+      [1,5,4,5,1],
+      [1,4,1,4,1],
+      [1,5,4,5,1],
+      [1,4,1,4,1],
+      [1,5,4,5,1],
+      [1,4,1,4,1],
+      [1,5,4,5,1],
+      [1,4,1,4,1],
+      [1,1,0,1,1],
+      [1,0,2,0,1],
+      [1,2,3,2,1],
+      [1,0,2,0,1],
+      [1,1,0,1,1],
+      [1,1,1,1,1],
+      [1,1,1,1,1]
+    ];
+    var w: number = 5;
+    var h: number = 25;
+    const p = Pietre.parseProgram(data, w, h);
+    Pietre.unifyBlackBlocks(p);
+    Pietre.findStartingPosition(p);
+    //Pietre.printProgram(p);
+    expect(p.start.value).to.equal(70);
+  });
+});
+
+describe('5x8 pixels w/ black -> 40 blocks test', () => {
+  it('should return a program with a main block with a value of 29 ', () => {
+    var data: number[][] = [
+      [1,1,1,1,1],
+      [1,1,1,1,1],
+      [1,1,0,1,1],
+      [1,0,2,0,1],
+      [1,2,3,2,1],
+      [1,0,2,0,1],
+      [1,1,0,1,1],
+      [1,1,1,1,1]
+    ];
+    var w: number = 5;
+    var h: number = 8;
+    const p = Pietre.parseProgram(data, w, h);
+    Pietre.unifyBlackBlocks(p);
+    Pietre.findStartingPosition(p);
+    //Pietre.printProgram(p);
+    expect(p.start.value).to.equal(29);
+  });
+});
 
 describe('11x11 pixels w/ black -> 7 blocks test', () => {
   it('should return a program with 7 non black block', () => {
@@ -23,7 +83,7 @@ describe('11x11 pixels w/ black -> 7 blocks test', () => {
     var h: number = 11;
     var p = Pietre.parseProgram(data, w, h);
     Pietre.unifyBlackBlocks(p);
-    Pietre.printProgram(p);
+    //Pietre.printProgram(p);
     expect(p.blocks.length).to.equal(7);
   });
 });
@@ -79,6 +139,24 @@ describe('5x5 pixels -> 25 blocks test', () => {
     const p = Pietre.parseProgram(data, w, h);
     //Pietre.printProgram(p);
     expect(p.blocks.length).to.equal(6);
+  });
+});
+
+describe('3x4 pixels w/ black -> 40 blocks test', () => {
+  it('should return a program with a main block with a value of 29 ', () => {
+    var data: number[][] = [
+      [1,1,1],
+      [1,2,1],
+      [1,2,1],
+      [1,1,1],
+    ];
+    var w: number = 3;
+    var h: number = 4;
+    const p = Pietre.parseProgram(data, w, h);
+    Pietre.unifyBlackBlocks(p);
+    Pietre.findStartingPosition(p);
+    //Pietre.printProgram(p);
+    expect(p.start.value).to.equal(10);
   });
 });
 

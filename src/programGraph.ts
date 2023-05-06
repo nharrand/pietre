@@ -84,7 +84,7 @@ export function updateMargins(stays: Block, removed: Block) {
   }
 }
 
-export function merge(x: number, y: number, b1: Block, b2: Block, prevLine: Line, p: Program) {
+export function merge(x: number, y: number, b1: Block, b2: Block, curLine: Line, p: Program) {
   if (b1 == Black || b2 == Black) return;
   
   b1.value += b2.value;
@@ -98,6 +98,10 @@ export function merge(x: number, y: number, b1: Block, b2: Block, prevLine: Line
     for(var el of line.elements) {
       if(el.block == b2) el.block = b1;
     }
+  }
+
+  for(var el of curLine.elements) {
+    if(el.block == b2) el.block = b1;
   }
 
   if(p.start == b2) p.start = b1;
@@ -146,7 +150,7 @@ export function parseProgram(data : number[][], w: number, h: number): Program {
         if (curColor == topBlock.color) {
           // merge up if different block
           if(leftBlock != topBlock) {
-            merge(i,j,leftBlock, topBlock, prevLine, program);
+            merge(i,j,leftBlock, topBlock, curLine, program);
           }
         } else {
           // update top block

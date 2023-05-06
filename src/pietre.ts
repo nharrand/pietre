@@ -25,7 +25,7 @@ export function run(data : number[][], w: number, h: number) {
 
     var inputFile : string | undefined = process.argv[2];
 
-    //inputFile = "input-programs/hw4-1.gif";
+    inputFile = "input-programs/hw3-1.png";
 
     if((inputFile) === undefined) {
         console.log("no file to run");
