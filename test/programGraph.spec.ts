@@ -95,6 +95,17 @@ describe('3x3 pixels 2 -> 9 blocks test', () => {
     const p = Pietre.parseProgram(data, w, h);
     //Pietre.printProgram(p);
     expect(p.blocks.length).to.equal(3);
+
+    expect(p.blocks[0].color).to.equal(1);
+    expect(p.blocks[0].value).to.equal(3);
+    expect(p.blocks[0].right[0].color).to.equal(2);
+    expect(p.blocks[0].right[1].color).to.equal(2);
+    expect(p.blocks[0].down[0].color).to.equal(2);
+    expect(p.blocks[0].down[1].color).to.equal(2);
+
+    
+    expect(p.lines[0].elements[1].block.color).to.equal(2);
+    expect(p.lines[0].elements[1].block.value).to.equal(5);
   });
 });
 
@@ -111,6 +122,26 @@ describe('3x3 pixels -> 9 blocks test', () => {
     const p = Pietre.parseProgram(data, w, h);
     //Pietre.printProgram(p);
     expect(p.blocks.length).to.equal(5);
+
+    expect(p.blocks[0].color).to.equal(1);
+    expect(p.blocks[0].value).to.equal(2);
+    expect(p.blocks[0].right[0].color).to.equal(2);
+    expect(p.blocks[0].right[1].color).to.equal(3);
+
+    expect(p.blocks[1].color).to.equal(2);
+    expect(p.blocks[1].value).to.equal(2);
+    expect(p.blocks[1].down[0].color).to.equal(4);
+    expect(p.blocks[1].down[1].color).to.equal(3);
+
+    expect(p.blocks[3].color).to.equal(4);
+    expect(p.blocks[3].value).to.equal(2);
+    expect(p.blocks[3].left[0].color).to.equal(5);
+    expect(p.blocks[3].left[1].color).to.equal(3);
+
+    expect(p.blocks[4].color).to.equal(5);
+    expect(p.blocks[4].value).to.equal(2);
+    expect(p.blocks[4].up[0].color).to.equal(1);
+    expect(p.blocks[4].up[1].color).to.equal(3);
   });
 });
 
@@ -126,6 +157,23 @@ describe('2x2 pixels -> 4 blocks test', () => {
     const p = Pietre.parseProgram(data, w, h);
     //Pietre.printProgram(p);
     expect(p.blocks.length).to.equal(4);
+
+
+    expect(p.blocks[0].color).to.equal(1);
+    expect(p.blocks[0].value).to.equal(1);
+    expect(p.blocks[0].right[0].color).to.equal(2);
+    expect(p.blocks[0].right[1].color).to.equal(2);
+    expect(p.blocks[0].down[0].color).to.equal(3);
+    expect(p.blocks[0].down[1].color).to.equal(3);
+
+    expect(p.blocks[3].color).to.equal(4);
+    expect(p.blocks[3].value).to.equal(1);
+    expect(p.blocks[3].up[0].color).to.equal(2);
+    expect(p.blocks[3].up[1].color).to.equal(2);
+    expect(p.blocks[3].left[0].color).to.equal(3);
+    expect(p.blocks[3].left[1].color).to.equal(3);
+
+
   });
 });
 
@@ -139,6 +187,8 @@ describe('1 pixel -> 1 block test', () => {
     const p = Pietre.parseProgram(data, w, h);
     //Pietre.printProgram(p);
     expect(p.blocks.length).to.equal(1);
+    expect(p.blocks[0].color).to.equal(1);
+    expect(p.blocks[0].value).to.equal(1);
   });
 });
 

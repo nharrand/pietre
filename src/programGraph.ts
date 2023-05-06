@@ -93,9 +93,11 @@ export function merge(x: number, y: number, b1: Block, b2: Block, prevLine: Line
 
   replaceLinks(b2, b1);
 
-  //update prevline
-  for(var el of prevLine.elements) {
-    if(el.block == b2) el.block = b1;
+  //update lines
+  for(var line of p.lines) {
+    for(var el of line.elements) {
+      if(el.block == b2) el.block = b1;
+    }
   }
 
   if(p.start == b2) p.start = b1;
@@ -190,8 +192,8 @@ export function parseProgram(data : number[][], w: number, h: number): Program {
             topBlock.left[0] = leftBlock;
             if(leftBlock.inBound.indexOf(topBlock) == -1) leftBlock.inBound.push(topBlock);
 
-            leftBlock = topBlock;
           }
+          leftBlock = topBlock;
         } else {
           // new block
           var newBlock = new Block(curColor, 1);
@@ -247,7 +249,6 @@ export function parseProgram(data : number[][], w: number, h: number): Program {
     el.block.margins.down = h-1;
   }
 
-  program.start = program.blocks[0];
   return program;
 }
 
@@ -302,3 +303,8 @@ export function unifyBlackBlocks(program: Program) {
 }
 
 
+export function findStartingPosition(program: Program) {
+  //Apparently the top left corner must be non black
+  //TOFIX handle the case where the corner is white
+  program.start = program.lines[0].elements[0].block;
+}

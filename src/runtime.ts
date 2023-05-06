@@ -70,6 +70,9 @@ function initPalette() : Map<number,Color> {
   return p;
 }
 
+function mod(n, m) {
+    return ((n % m) + m) % m;
+}
 
 export class Color {
   light: number; //Can be light medium or dark
@@ -95,14 +98,14 @@ export function runProgram(runtime: Runtime, program: Program) {
         applyInstruction(runtime, curBlock, nextBlock);
         curBlock = nextBlock;
     }
-    
+
     log("Program ended.")
 }
 
 export function getNextBlock(runtime: Runtime, curBlock: Block): Block {
     var tentative : Block = Black;
     var c: number = 0;
-    do {
+    while (c < 8) {
         switch(runtime.DP) {
             case 0: {
                 tentative = curBlock.up[runtime.CC];
@@ -121,13 +124,17 @@ export function getNextBlock(runtime: Runtime, curBlock: Block): Block {
                 break;
             }
         }
-        if( c % 2 == 0) {
-            runtime.CC = (runtime.CC + 1) % 2;
+        if(tentative == Black) {
+            if( c % 2 == 0) {
+                runtime.CC = (runtime.CC + 1) % 2;
+            } else {
+                runtime.DP = (runtime.DP + 1) % 4;
+            }
+            c++;
         } else {
-            runtime.DP = (runtime.DP + 1) % 4;
+            return tentative;
         }
-        c++;
-    } while ((tentative == Black) && (c < 8));
+    }
     return tentative;
 }
 
@@ -136,8 +143,8 @@ export function applyInstruction(runtime: Runtime, source: Block, destination: B
     const c1 = runtime.Palette.get(source.color);
     const c2 = runtime.Palette.get(destination.color);
 
-    const ldiff: number = c2.light - c1.light % 3;
-    const hdiff: number = c2.hue - c1.hue % 6;
+    const ldiff: number = mod(c2.light - c1.light, 3);
+    const hdiff: number = mod(c2.hue - c1.hue, 6);
 
     switch (ldiff) {
         case 0: {
@@ -171,7 +178,7 @@ export function applyInstruction(runtime: Runtime, source: Block, destination: B
                     break;
                 }
                 case 4: {
-                    const a = runtime.Stack[runtime.Stack.length];
+                    const a = runtime.Stack[runtime.Stack.length-1];
                     runtime.Stack.push(a);
                     log("duplicate " + a);
                     break;
