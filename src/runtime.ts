@@ -8,6 +8,18 @@ export class Runtime {
     Stack: number[] = [];
 }
 
+export function printState(runtime: Runtime) {
+    const d = runtime.DP > 1 ? (runtime.DP > 0 ? '>' : '^') : (runtime.DP > 2 ? '<' : 'v')
+    log(" -- DP: " + d + ", CC: " + runtime.CC + " , Stack: " + printStack(runtime.Stack));
+}
+
+export function printStack(s: number[]) : string {
+    var str : string = "[";
+    for(var i = 0; i < s.length; i++) {
+        str += " " + s[i];
+    }
+    return str + " ]";
+}
 
 
 function initPalette() : Map<number,Color> {
@@ -93,6 +105,7 @@ export function runProgram(runtime: Runtime, program: Program) {
     log("Program start...")
 
     while(!curBlock.isFinal) {
+        printState(runtime);
         nextBlock = getNextBlock(runtime, curBlock);
         if(nextBlock == Black) break;
         applyInstruction(runtime, curBlock, nextBlock);
@@ -154,33 +167,49 @@ export function applyInstruction(runtime: Runtime, source: Block, destination: B
                 }
                 case 1: {
                     //Add
-                    const a = runtime.Stack.pop();
-                    const b = runtime.Stack.pop();
-                    runtime.Stack.push(a + b);
-                    log("add " + a + " " + b);
+                    if(runtime.Stack.length >= 2) {
+                        const a = runtime.Stack.pop();
+                        const b = runtime.Stack.pop();
+                        runtime.Stack.push(a + b);
+                        log("add " + a + " " + b);
+                    } else {
+                        log("add failed, stack underflow");
+                    }
                     break;
                 }
                 case 2: {
                     //divide
-                    const a = runtime.Stack.pop();
-                    const b = runtime.Stack.pop();
-                    runtime.Stack.push(Math.floor(b/a));
-                    log("divide " + a + " " + b);
+                    if(runtime.Stack.length >= 2) {
+                        const a = runtime.Stack.pop();
+                        const b = runtime.Stack.pop();
+                        runtime.Stack.push(Math.floor(b/a));
+                        log("divide " + a + " " + b);
+                    } else {
+                        log("devide failed, stack underflow");
+                    }
                     break;
                 }
                 case 3: {
                     //greater
-                    const a = runtime.Stack.pop();
-                    const b = runtime.Stack.pop();
-                    runtime.Stack.push(b > a ? 1 : 0);
-                    log("greater " + a + " " + b);
+                    if(runtime.Stack.length >= 2) {
+                        const a = runtime.Stack.pop();
+                        const b = runtime.Stack.pop();
+                        runtime.Stack.push(b > a ? 1 : 0);
+                        log("greater " + a + " " + b);
+                    } else {
+                        log("greater failed, stack underflow");
+                    }
                     
                     break;
                 }
                 case 4: {
-                    const a = runtime.Stack[runtime.Stack.length-1];
-                    runtime.Stack.push(a);
-                    log("duplicate " + a);
+                    if(runtime.Stack.length >= 1) {
+                        const a = runtime.Stack[runtime.Stack.length-1];
+                        runtime.Stack.push(a);
+                        log("duplicate " + a);
+                    } else {
+                        log("duplicate failed, stack underflow");
+                    }
                     break;
                 }
                 case 5: {
@@ -201,39 +230,61 @@ export function applyInstruction(runtime: Runtime, source: Block, destination: B
                 }
                 case 1: {
                     //Substract
-                    const a = runtime.Stack.pop();
-                    const b = runtime.Stack.pop();
-                    runtime.Stack.push(b - a);
-                    log("substract " + a + " " + b);
+                    if(runtime.Stack.length >= 2) {
+                        const a = runtime.Stack.pop();
+                        const b = runtime.Stack.pop();
+                        runtime.Stack.push(b - a);
+                        log("substract " + a + " " + b);
+                    } else {
+                        log("substract failed, stack underflow");
+                    }
                     break;
                 }
                 case 2: {
                     //mod
-                    const a = runtime.Stack.pop();
-                    const b = runtime.Stack.pop();
-                    runtime.Stack.push(b % a);
-                    log("mod " + a + " " + b);
+                    if(runtime.Stack.length >= 2) {
+                        const a = runtime.Stack.pop();
+                        const b = runtime.Stack.pop();
+                        runtime.Stack.push(b % a);
+                        log("mod " + a + " " + b);
+                    } else {
+                        log("mod failed, stack underflow");
+                    }
                     break;
                 }
                 case 3: {
                     //pointer
-                    const a = runtime.Stack.pop();
-                    runtime.DP = (runtime.DP + a) % 4;
-                    log("pointer " + a);
+                    if(runtime.Stack.length >= 1) {
+                        const a = runtime.Stack.pop();
+                        runtime.DP = (runtime.DP + a) % 4;
+                        log("pointer " + a);
+                    } else {
+                        log("pointer failed, stack underflow");
+                    }
                     break;
                 }
                 case 4: {
                     //roll
+                    if(runtime.Stack.length >= 2) {
                     const a = runtime.Stack.pop();
                     const b = runtime.Stack.pop();
+
+                    roll(runtime.Stack, b, a);
                     log("roll " + a + " " + b);
+                    } else {
+                        log("roll failed, stack underflow");
+                    }
                     break;
                 }
                 case 5: {
                     //out(number)
-                    const a = runtime.Stack.pop();
-                    console.log(a);
-                    log("out(number) ");
+                    if(runtime.Stack.length >= 1) {
+                        const a = runtime.Stack.pop();
+                        console.log(a);
+                        log("out(number) ");
+                    } else {
+                        log("out(number) failed, stack underflow");
+                    }
                     break;
                 }
             }
@@ -243,30 +294,46 @@ export function applyInstruction(runtime: Runtime, source: Block, destination: B
             switch (hdiff) {
                 case 0: {
                     //pop
-                    runtime.Stack.pop();
-                    log("pop ");
+                    if(runtime.Stack.length >= 1) {
+                        runtime.Stack.pop();
+                        log("pop ");
+                    } else {
+                        log("pop failed, stack underflow");
+                    }
                     break;
                 }
                 case 1: {
                     //multiply
-                    const a = runtime.Stack.pop();
-                    const b = runtime.Stack.pop();
-                    runtime.Stack.push(a * b);
-                    log("multiply " + a + " " + b);
+                    if(runtime.Stack.length >= 2) {
+                        const a = runtime.Stack.pop();
+                        const b = runtime.Stack.pop();
+                        runtime.Stack.push(a * b);
+                        log("multiply " + a + " " + b);
+                    } else {
+                        log("multiply failed, stack underflow");
+                    }
                     break;
                 }
                 case 2: {
                     //not
-                    const a = runtime.Stack.pop();
-                    runtime.Stack.push(a == 0 ? 1 : 0);
-                    log("not " + a);
+                    if(runtime.Stack.length >= 1) {
+                        const a = runtime.Stack.pop();
+                        runtime.Stack.push(a == 0 ? 1 : 0);
+                        log("not " + a);
+                    } else {
+                        log("not failed, stack underflow");
+                    }
                     break;
                 }
                 case 3: {
                     //switch
-                    const a = runtime.Stack.pop();
-                    runtime.CC = (runtime.CC + a) % 2;
-                    log("switch " + a);
+                    if(runtime.Stack.length >= 2) {
+                        const a = runtime.Stack.pop();
+                        runtime.CC = (runtime.CC + a) % 2;
+                        log("switch " + a);
+                    } else {
+                        log("switch failed, stack underflow");
+                    }
                     break;
                 }
                 case 4: {
@@ -276,13 +343,25 @@ export function applyInstruction(runtime: Runtime, source: Block, destination: B
                 }
                 case 5: {
                     //out(character)
-                    const a = runtime.Stack.pop();
-                    console.log(String.fromCharCode(a));
-                    log("out(character) " + a);
+                    if(runtime.Stack.length >= 1) {
+                        const a = runtime.Stack.pop();
+                        console.log(String.fromCharCode(a));
+                        log("out(character) " + a);
+                    } else {
+                        log("out(character) failed, stack underflow");
+                    }
                     break;
                 }
             }
             break;
         }
+    }
+}
+
+export function roll(stack: number[], depth: number, times: number) {
+
+    var barrel : number[] = stack.slice(stack.length - depth);
+    for (var i = 0; i < depth; i++) {
+        stack[stack.length - depth + i] = barrel[mod(i - times, depth)];
     }
 }

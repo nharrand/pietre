@@ -25,11 +25,13 @@ export function run(data : number[][], w: number, h: number) {
 
     var inputFile : string | undefined = process.argv[2];
 
+    //inputFile = "input-programs/hw4-1.gif";
+
     if((inputFile) === undefined) {
         console.log("no file to run");
     } else {
         Jimp.read(inputFile, function (err, image) {
-            console.log("Image: " + image.bitmap.height + "x" + image.bitmap.width);
+            console.log("Image: " + image.getHeight() + "x" + image.getWidth());
             var data: number[][] = [];
             for(var x = 0; x < image.getHeight(); x++) {
                 var row: number[] = [];
