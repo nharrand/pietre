@@ -1,9 +1,8 @@
-import { expect } from 'chai';
-import * as Pietre from '../src/programGraph';
+import * as pgraph from '../src/programGraph';
 
 
 describe('5x25 pixels w/ black -> 125 blocks test', () => {
-  it('should return a program with a main block with a value of 72 ', () => {
+  test('should return a program with a main block with a value of 70.', () => {
     var data: number[][] = [
       [1,1,1,1,1],
       [1,1,1,1,1],
@@ -33,16 +32,16 @@ describe('5x25 pixels w/ black -> 125 blocks test', () => {
     ];
     var w: number = 5;
     var h: number = 25;
-    const p = Pietre.parseProgram(data, w, h);
-    Pietre.unifyBlackBlocks(p);
-    Pietre.findStartingPosition(p);
-    //Pietre.printProgram(p);
-    expect(p.start.value).to.equal(70);
+    const p = pgraph.parseProgram(data, w, h);
+    pgraph.unifyBlackBlocks(p);
+    pgraph.findStartingPosition(p);
+    //pgraph.printProgram(p);
+    expect(p.start.value).toBe(70);
   });
 });
 
 describe('5x8 pixels w/ black -> 40 blocks test', () => {
-  it('should return a program with a main block with a value of 29 ', () => {
+  test('should return a program with a main block with a value of 29.', () => {
     var data: number[][] = [
       [1,1,1,1,1],
       [1,1,1,1,1],
@@ -55,16 +54,16 @@ describe('5x8 pixels w/ black -> 40 blocks test', () => {
     ];
     var w: number = 5;
     var h: number = 8;
-    const p = Pietre.parseProgram(data, w, h);
-    Pietre.unifyBlackBlocks(p);
-    Pietre.findStartingPosition(p);
-    //Pietre.printProgram(p);
-    expect(p.start.value).to.equal(29);
+    const p = pgraph.parseProgram(data, w, h);
+    pgraph.unifyBlackBlocks(p);
+    pgraph.findStartingPosition(p);
+    //pgraph.printProgram(p);
+    expect(p.start.value).toBe(29);
   });
 });
 
 describe('11x11 pixels w/ black -> 7 blocks test', () => {
-  it('should return a program with 7 non black block', () => {
+  test('should return a program with 7 non black blocks.', () => {
     var data: number[][] = [
       [1,1,1,1,1,1,1,1,1,1,1],
       [1,1,1,1,1,1,1,1,2,2,2],
@@ -81,16 +80,16 @@ describe('11x11 pixels w/ black -> 7 blocks test', () => {
     ];
     var w: number = 11;
     var h: number = 11;
-    var p = Pietre.parseProgram(data, w, h);
-    Pietre.unifyBlackBlocks(p);
-    //Pietre.printProgram(p);
-    expect(p.blocks.length).to.equal(7);
+    var p = pgraph.parseProgram(data, w, h);
+    pgraph.unifyBlackBlocks(p);
+    //pgraph.printProgram(p);
+    expect(p.blocks.length).toBe(7);
   });
 });
 
 
 describe('5x5 pixels w/ black -> 25 blocks test', () => {
-  it('should return a program with 6 non black block', () => {
+  test('should return a program with 6 non black block.', () => {
     var data: number[][] = [
       [1,1,0,1,1],
       [1,0,2,0,1],
@@ -100,14 +99,14 @@ describe('5x5 pixels w/ black -> 25 blocks test', () => {
     ];
     var w: number = 5;
     var h: number = 5;
-    const p = Pietre.parseProgram(data, w, h);
-    //Pietre.printProgram(p);
-    expect(p.blocks.length).to.equal(9);
+    const p = pgraph.parseProgram(data, w, h);
+    //pgraph.printProgram(p);
+    expect(p.blocks.length).toBe(9);
   });
 });
 
 describe('6x6 pixels -> 36 blocks test', () => {
-  it('should return a program with 13 non black block', () => {
+  test('should return a program with 13 non black block.', () => {
     var data: number[][] = [
       [4,4,1,2,4,4],
       [4,4,3,3,4,4],
@@ -118,15 +117,15 @@ describe('6x6 pixels -> 36 blocks test', () => {
     ];
     var w: number = 6;
     var h: number = 6;
-    const p = Pietre.parseProgram(data, w, h);
-    //Pietre.printProgram(p);
-    expect(p.blocks.length).to.equal(13);
+    const p = pgraph.parseProgram(data, w, h);
+    //pgraph.printProgram(p);
+    expect(p.blocks.length).toBe(13);
   });
 });
 
 
 describe('5x5 pixels -> 25 blocks test', () => {
-  it('should return a program with 6 non black block', () => {
+  test('should return a program with 6 non black blocks.', () => {
     var data: number[][] = [
       [1,1,1,1,1],
       [2,3,3,3,3],
@@ -136,14 +135,14 @@ describe('5x5 pixels -> 25 blocks test', () => {
     ];
     var w: number = 5;
     var h: number = 5;
-    const p = Pietre.parseProgram(data, w, h);
-    //Pietre.printProgram(p);
-    expect(p.blocks.length).to.equal(6);
+    const p = pgraph.parseProgram(data, w, h);
+    //pgraph.printProgram(p);
+    expect(p.blocks.length).toBe(6);
   });
 });
 
 describe('3x4 pixels w/ black -> 40 blocks test', () => {
-  it('should return a program with a main block with a value of 29 ', () => {
+  test('should return a program with a main block with a value of 10.', () => {
     var data: number[][] = [
       [1,1,1],
       [1,2,1],
@@ -152,17 +151,17 @@ describe('3x4 pixels w/ black -> 40 blocks test', () => {
     ];
     var w: number = 3;
     var h: number = 4;
-    const p = Pietre.parseProgram(data, w, h);
-    Pietre.unifyBlackBlocks(p);
-    Pietre.findStartingPosition(p);
-    //Pietre.printProgram(p);
-    expect(p.start.value).to.equal(10);
+    const p = pgraph.parseProgram(data, w, h);
+    pgraph.unifyBlackBlocks(p);
+    pgraph.findStartingPosition(p);
+    //pgraph.printProgram(p);
+    expect(p.start.value).toBe(10);
   });
 });
 
 
 describe('3x3 pixels 2 -> 9 blocks test', () => {
-  it('should return a program with 3 non black block', () => {
+  test('should return a program with 3 non black blocks correctly connected.', () => {
     var data: number[][] = [
       [1,1,2],
       [1,3,2],
@@ -170,26 +169,26 @@ describe('3x3 pixels 2 -> 9 blocks test', () => {
     ];
     var w: number = 3;
     var h: number = 3;
-    const p = Pietre.parseProgram(data, w, h);
-    //Pietre.printProgram(p);
-    expect(p.blocks.length).to.equal(3);
+    const p = pgraph.parseProgram(data, w, h);
+    //pgraph.printProgram(p);
+    expect(p.blocks.length).toBe(3);
 
-    expect(p.blocks[0].color).to.equal(1);
-    expect(p.blocks[0].value).to.equal(3);
-    expect(p.blocks[0].right[0].color).to.equal(2);
-    expect(p.blocks[0].right[1].color).to.equal(2);
-    expect(p.blocks[0].down[0].color).to.equal(2);
-    expect(p.blocks[0].down[1].color).to.equal(2);
+    expect(p.blocks[0].color).toBe(1);
+    expect(p.blocks[0].value).toBe(3);
+    expect(p.blocks[0].right[0].color).toBe(2);
+    expect(p.blocks[0].right[1].color).toBe(2);
+    expect(p.blocks[0].down[0].color).toBe(2);
+    expect(p.blocks[0].down[1].color).toBe(2);
 
     
-    expect(p.lines[0].elements[1].block.color).to.equal(2);
-    expect(p.lines[0].elements[1].block.value).to.equal(5);
+    expect(p.lines[0].elements[1].block.color).toBe(2);
+    expect(p.lines[0].elements[1].block.value).toBe(5);
   });
 });
 
 
 describe('3x3 pixels -> 9 blocks test', () => {
-  it('should return a program with 5 non black block', () => {
+  test('should return a program with 5 non black blocks correctly connected.', () => {
     var data: number[][] = [
       [1,2,2],
       [1,3,4],
@@ -197,83 +196,83 @@ describe('3x3 pixels -> 9 blocks test', () => {
     ];
     var w: number = 3;
     var h: number = 3;
-    const p = Pietre.parseProgram(data, w, h);
-    //Pietre.printProgram(p);
-    expect(p.blocks.length).to.equal(5);
+    const p = pgraph.parseProgram(data, w, h);
+    //pgraph.printProgram(p);
+    expect(p.blocks.length).toBe(5);
 
-    expect(p.blocks[0].color).to.equal(1);
-    expect(p.blocks[0].value).to.equal(2);
-    expect(p.blocks[0].right[0].color).to.equal(2);
-    expect(p.blocks[0].right[1].color).to.equal(3);
+    expect(p.blocks[0].color).toBe(1);
+    expect(p.blocks[0].value).toBe(2);
+    expect(p.blocks[0].right[0].color).toBe(2);
+    expect(p.blocks[0].right[1].color).toBe(3);
 
-    expect(p.blocks[1].color).to.equal(2);
-    expect(p.blocks[1].value).to.equal(2);
-    expect(p.blocks[1].down[0].color).to.equal(4);
-    expect(p.blocks[1].down[1].color).to.equal(3);
+    expect(p.blocks[1].color).toBe(2);
+    expect(p.blocks[1].value).toBe(2);
+    expect(p.blocks[1].down[0].color).toBe(4);
+    expect(p.blocks[1].down[1].color).toBe(3);
 
-    expect(p.blocks[3].color).to.equal(4);
-    expect(p.blocks[3].value).to.equal(2);
-    expect(p.blocks[3].left[0].color).to.equal(5);
-    expect(p.blocks[3].left[1].color).to.equal(3);
+    expect(p.blocks[3].color).toBe(4);
+    expect(p.blocks[3].value).toBe(2);
+    expect(p.blocks[3].left[0].color).toBe(5);
+    expect(p.blocks[3].left[1].color).toBe(3);
 
-    expect(p.blocks[4].color).to.equal(5);
-    expect(p.blocks[4].value).to.equal(2);
-    expect(p.blocks[4].up[0].color).to.equal(1);
-    expect(p.blocks[4].up[1].color).to.equal(3);
+    expect(p.blocks[4].color).toBe(5);
+    expect(p.blocks[4].value).toBe(2);
+    expect(p.blocks[4].up[0].color).toBe(1);
+    expect(p.blocks[4].up[1].color).toBe(3);
   });
 });
 
 
 describe('2x2 pixels -> 4 blocks test', () => {
-  it('should return a program with 4 non black block', () => {
+  test('should return a program with 4 non black blocks correctly connected.', () => {
     var data: number[][] = [
       [1,2],
       [3,4]
     ];
     var w: number = 2;
     var h: number = 2;
-    const p = Pietre.parseProgram(data, w, h);
-    //Pietre.printProgram(p);
-    expect(p.blocks.length).to.equal(4);
+    const p = pgraph.parseProgram(data, w, h);
+    //pgraph.printProgram(p);
+    expect(p.blocks.length).toBe(4);
 
 
-    expect(p.blocks[0].color).to.equal(1);
-    expect(p.blocks[0].value).to.equal(1);
-    expect(p.blocks[0].right[0].color).to.equal(2);
-    expect(p.blocks[0].right[1].color).to.equal(2);
-    expect(p.blocks[0].down[0].color).to.equal(3);
-    expect(p.blocks[0].down[1].color).to.equal(3);
+    expect(p.blocks[0].color).toBe(1);
+    expect(p.blocks[0].value).toBe(1);
+    expect(p.blocks[0].right[0].color).toBe(2);
+    expect(p.blocks[0].right[1].color).toBe(2);
+    expect(p.blocks[0].down[0].color).toBe(3);
+    expect(p.blocks[0].down[1].color).toBe(3);
 
-    expect(p.blocks[3].color).to.equal(4);
-    expect(p.blocks[3].value).to.equal(1);
-    expect(p.blocks[3].up[0].color).to.equal(2);
-    expect(p.blocks[3].up[1].color).to.equal(2);
-    expect(p.blocks[3].left[0].color).to.equal(3);
-    expect(p.blocks[3].left[1].color).to.equal(3);
+    expect(p.blocks[3].color).toBe(4);
+    expect(p.blocks[3].value).toBe(1);
+    expect(p.blocks[3].up[0].color).toBe(2);
+    expect(p.blocks[3].up[1].color).toBe(2);
+    expect(p.blocks[3].left[0].color).toBe(3);
+    expect(p.blocks[3].left[1].color).toBe(3);
 
 
   });
 });
 
 describe('1 pixel -> 1 block test', () => {
-  it('should return a program with one non black block', () => {
+  test('should return a program with one non black block.', () => {
     var data: number[][] = [
       [1]
     ];
     var w: number = 1;
     var h: number = 1;
-    const p = Pietre.parseProgram(data, w, h);
-    //Pietre.printProgram(p);
-    expect(p.blocks.length).to.equal(1);
-    expect(p.blocks[0].color).to.equal(1);
-    expect(p.blocks[0].value).to.equal(1);
+    const p = pgraph.parseProgram(data, w, h);
+    //pgraph.printProgram(p);
+    expect(p.blocks.length).toBe(1);
+    expect(p.blocks[0].color).toBe(1);
+    expect(p.blocks[0].value).toBe(1);
   });
 });
 
 
 
 /*describe('printProgram', () => {
-  it('should print the block description of each color blocks of a program', () => {
+  test('should print the block description of each color blocks of a program', () => {
     var data: number[][] = [];
     var w: number = 0;
     var h: number = 0;
@@ -289,8 +288,8 @@ describe('1 pixel -> 1 block test', () => {
       h = image.bitmap.height;
       console.log("Image: " + w + "x" + h);
       console.log("  (0,0)): " + data[0][0]);
-      const p = Pietre.parseProgram(data, w, h);
-      Pietre.printProgram(p);
+      const p = pgraph.parseProgram(data, w, h);
+      pgraph.printProgram(p);
     });
   });
 });*/

@@ -1,9 +1,10 @@
 {
   "compilerOptions": {
     "module": "Node16",
-    "target": "es2017",
+    "target": "ES6",
     "lib": ["es6", "dom"],
     "sourceMap": true,
+    "esModuleInterop": true,
     "outDir": "./dist"
   },
   "include": ["src/**/*"],
