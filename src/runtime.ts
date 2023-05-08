@@ -1,11 +1,19 @@
-import { Black, Block, Program } from "./programGraph";
-import { log } from "./logger";
+import { Black, Block, Line, Program } from "./programGraph.js";
+import { log } from "./logger.js";
+import * as readline from 'node:readline/promises';
 
 export class Runtime {
     DP: number = 1; //0,1,2,3
     CC: number = 0; //0,1 
     Palette: Map<number,Color> = initPalette();
     Stack: number[] = [];
+    program: Program;
+    curBlock: Block;
+    isDone: boolean;
+    isPaused: boolean;
+    expectingNumber: boolean;
+    in: number;
+
 }
 
 export function printState(runtime: Runtime) {
@@ -86,6 +94,13 @@ function mod(n, m) {
     return ((n % m) + m) % m;
 }
 
+
+
+function applyIn(expectsNumber: boolean, runtime: Runtime) {
+    runtime.isPaused = true;
+    runtime.expectingNumber = expectsNumber;
+}
+
 export class Color {
   light: number; //Can be light medium or dark
   hue: number; //can be red, yellow, green, cyan, blue, magenta, white or black
@@ -97,6 +112,43 @@ export class Color {
     this.code = c;
   }
 }
+  
+export function loadProgram(runtime: Runtime, program: Program) {
+    runtime.program = program;
+    runtime.curBlock = program.start;
+    runtime.isDone = false;
+    runtime.isPaused = false;
+}
+export function runUntilPause(runtime: Runtime) {
+    var nextBlock: Block;
+
+    if(runtime.isPaused) {
+        //Execution was interrupted by 'in' instruction, reading runtime.in and resume
+        if(runtime.in != undefined) {
+            runtime.Stack.push(runtime.in);
+        } else {
+            log("failed to read input");
+        }
+        runtime.isPaused = false;
+    }
+
+    while(!runtime.isDone && ! runtime.isPaused) {
+        if(runtime.curBlock.isFinal) {
+            runtime.isDone = true;
+        } else {
+            printState(runtime);
+            nextBlock = getNextBlock(runtime, runtime.curBlock);
+            if(nextBlock.color == white || runtime.Palette.get(nextBlock.color) == undefined) {
+                nextBlock = applyWhiteBlock(runtime, runtime.curBlock, nextBlock);
+                if(nextBlock == Black) runtime.isDone = true;
+            } else {
+                if(nextBlock == Black) runtime.isDone = true;
+                applyInstruction(runtime, runtime.curBlock, nextBlock);
+            }
+            runtime.curBlock = nextBlock;
+        }
+    }
+}
 
 export function runProgram(runtime: Runtime, program: Program) {
     var curBlock: Block = program.start;
@@ -107,8 +159,13 @@ export function runProgram(runtime: Runtime, program: Program) {
     while(!curBlock.isFinal) {
         printState(runtime);
         nextBlock = getNextBlock(runtime, curBlock);
-        if(nextBlock == Black) break;
-        applyInstruction(runtime, curBlock, nextBlock);
+        if(nextBlock.color == white) {
+            nextBlock = applyWhiteBlock(runtime, curBlock, nextBlock);
+            if(nextBlock == Black) break;
+        } else {
+            if(nextBlock == Black) break;
+            applyInstruction(runtime, curBlock, nextBlock);
+        }
         curBlock = nextBlock;
     }
 
@@ -215,6 +272,7 @@ export function applyInstruction(runtime: Runtime, source: Block, destination: B
                 case 5: {
                     //in(char)
                     log("in(char) ");
+                    applyIn(false, runtime);
                     break;
                 }
             }
@@ -266,11 +324,11 @@ export function applyInstruction(runtime: Runtime, source: Block, destination: B
                 case 4: {
                     //roll
                     if(runtime.Stack.length >= 2) {
-                    const a = runtime.Stack.pop();
-                    const b = runtime.Stack.pop();
+                        const a = runtime.Stack.pop();
+                        const b = runtime.Stack.pop();
 
-                    roll(runtime.Stack, b, a);
-                    log("roll " + a + " " + b);
+                        roll(runtime.Stack, b, a);
+                        log("roll " + a + " " + b);
                     } else {
                         log("roll failed, stack underflow");
                     }
@@ -280,7 +338,7 @@ export function applyInstruction(runtime: Runtime, source: Block, destination: B
                     //out(number)
                     if(runtime.Stack.length >= 1) {
                         const a = runtime.Stack.pop();
-                        console.log(a);
+                        process.stdout.write(a.toString());
                         log("out(number) ");
                     } else {
                         log("out(number) failed, stack underflow");
@@ -339,13 +397,14 @@ export function applyInstruction(runtime: Runtime, source: Block, destination: B
                 case 4: {
                     //in(number)
                     log("in(number) ");
+                    applyIn(true, runtime);
                     break;
                 }
                 case 5: {
                     //out(character)
                     if(runtime.Stack.length >= 1) {
                         const a = runtime.Stack.pop();
-                        console.log(String.fromCharCode(a));
+                        process.stdout.write(String.fromCharCode(a));
                         log("out(character) " + a);
                     } else {
                         log("out(character) failed, stack underflow");
@@ -359,9 +418,147 @@ export function applyInstruction(runtime: Runtime, source: Block, destination: B
 }
 
 export function roll(stack: number[], depth: number, times: number) {
-
-    var barrel : number[] = stack.slice(stack.length - depth);
-    for (var i = 0; i < depth; i++) {
-        stack[stack.length - depth + i] = barrel[mod(i - times, depth)];
+    if(depth <= stack.length) {
+        var barrel : number[] = stack.slice(stack.length - depth);
+        for (var i = 0; i < depth; i++) {
+            stack[stack.length - depth + i] = barrel[mod(i - times, depth)];
+        }
+    } else {
+        log("roll failed, stack underflow")
     }
+}
+
+
+const white: number = 0xFFFFFF;
+
+export function applyWhiteBlock(runtime: Runtime, source: Block, destination: Block): Block {
+    log("White block");
+    var visitedCorners : number[][] = [];
+    var curX: number = -1;
+    var curY: number = -1;
+    
+    var path: Line;
+    switch(runtime.DP) {
+        case 0: {
+            path = runtime.program.columns[source.corners.up[runtime.CC][0]];
+            curX = source.corners.up[runtime.CC][0];
+            curY = source.corners.up[runtime.CC][1] - 1;
+        }
+        break;
+        case 1: {
+            path = runtime.program.lines[source.corners.right[runtime.CC][1]];
+            curX = source.corners.right[runtime.CC][0] + 1;
+            curY = source.corners.right[runtime.CC][1];
+        }
+        break;
+        case 2: {
+            path = runtime.program.columns[source.corners.down[runtime.CC][0]];
+            curX = source.corners.down[runtime.CC][0];
+            curY = source.corners.down[runtime.CC][1] + 1;
+        }
+        break;
+        case 3: {
+            path = runtime.program.lines[source.corners.left[runtime.CC][1]];
+            curX = source.corners.left[runtime.CC][0] - 1;
+            curY = source.corners.left[runtime.CC][1];
+        }
+        break;
+    }
+
+
+    while(true) {
+        log("Entering at " + curX + ", " + curY + " -> dir: " + runtime.DP);
+
+        switch(runtime.DP) {
+            case 0: {
+                //up
+                for(var i = 0; i < path.elements.length; i++) {
+                    if(path.elements[i].block == destination) {
+                        if((i-1 >= 0) && (path.elements[i-1].block != Black)) {
+                            return path.elements[i-1].block;
+                        } else {
+                            curY = path.elements[i].begining;
+                            if(visitedCorners.some(c => (c[0] == curX && c[1]== curY && c[2] == runtime.DP))) {
+                                return Black;
+                            }
+                            visitedCorners.push([curX,curY,runtime.DP]);
+
+                            runtime.CC = (runtime.CC + 1) % 2;
+                            runtime.DP = (runtime.DP + 1) % 4;
+                            path = runtime.program.lines[path.elements[i].begining];
+                            break;
+                        }
+                    }
+                }
+                break;
+            }
+            case 1: {
+                //right
+                for(var i = 0; i < path.elements.length; i++) {
+                    if(path.elements[i].block == destination) {
+                        if((i+1 < path.elements.length) && (path.elements[i+1].block != Black)) {
+                            return path.elements[i+1].block;
+                        } else {
+                            curX = path.elements[i].end;
+                            if(visitedCorners.some(c => (c[0] == curX && c[1]== curY && c[2] == runtime.DP))) {
+                                return Black;
+                            }
+                            visitedCorners.push([curX,curY,runtime.DP]);
+
+                            runtime.CC = (runtime.CC + 1) % 2;
+                            runtime.DP = (runtime.DP + 1) % 4;
+                            path = runtime.program.columns[path.elements[i].end];
+                            break;
+                        }
+                    }
+                }
+                break;
+            }
+            case 2: {
+                //down
+                for(var i = 0; i < path.elements.length; i++) {
+                    if(path.elements[i].block == destination) {
+                        if((i+1 < path.elements.length) && (path.elements[i+1].block != Black)) {
+                            return path.elements[i+1].block;
+                        } else {
+                            curY = path.elements[i].end;
+                            if(visitedCorners.some(c => (c[0] == curX && c[1]== curY && c[2] == runtime.DP))) {
+                                return Black;
+                            }
+                            visitedCorners.push([curX,curY,runtime.DP]);
+
+                            runtime.CC = (runtime.CC + 1) % 2;
+                            runtime.DP = (runtime.DP + 1) % 4;
+                            path = runtime.program.lines[path.elements[i].end];
+                            break;
+                        }
+                    }
+                }
+                break;
+            }
+            case 3: {
+                //left
+                for(var i = 0; i < path.elements.length; i++) {
+                    if(path.elements[i].block == destination) {
+                        if((i-1 >= 0) && (path.elements[i-1].block != Black)) {
+                            return path.elements[i-1].block;
+                        } else {
+                            curX = path.elements[i].begining;
+                            if(visitedCorners.some(c => (c[0] == curX && c[1]== curY && c[2] == runtime.DP))) {
+                                return Black;
+                            }
+                            visitedCorners.push([curX,curY,runtime.DP]);
+
+                            runtime.CC = (runtime.CC + 1) % 2;
+                            runtime.DP = (runtime.DP + 1) % 4;
+                            path = runtime.program.columns[path.elements[i].begining];
+                            break;
+                        }
+                    }
+                }
+                break;
+            }
+        }
+    }
+    return Black;
 }

@@ -2,6 +2,7 @@ export class Program {
   start: Block;
   blocks: Block[] = [];
   lines: Line[] = [];
+  columns: Line[] = [];
 }
 
 
@@ -17,6 +18,7 @@ export class Block {
 
 
   margins = {"up": -2,"right": -2,"down": -2,"left": -2};
+  corners = {"up": [[0,0],[0,0]],"right": [[0,0],[0,0]],"down": [[0,0],[0,0]],"left": [[0,0],[0,0]]}
 
   constructor(c:number,v:number) {
     this.color = c;
@@ -64,23 +66,29 @@ export function updateMargins(stays: Block, removed: Block) {
   if(stays.margins.up >= removed.margins.up) {
     if(stays.margins.up > removed.margins.up) {
       stays.up[0] = removed.up[0];
+      stays.corners.up[0] = removed.corners.up[0].slice();
     }
     stays.margins.up = removed.margins.up;
     stays.up[1] = removed.up[1];
+    stays.corners.up[1] = removed.corners.up[1].slice();
   }
   if(stays.margins.left >= removed.margins.left) {
     if(stays.margins.left > removed.margins.left) {
       stays.left[0] = removed.left[0];
+      stays.corners.left[0] = removed.corners.left[0].slice();
     }
     stays.margins.left = removed.margins.left;
     stays.left[1] = removed.left[1];
+    stays.corners.left[1] = removed.corners.left[1].slice();
   }
   if(stays.margins.right <= removed.margins.right) {
     if(stays.margins.right < removed.margins.right) {
       stays.right[0] = removed.right[0];
+      stays.corners.right[0] = removed.corners.right[0].slice();
     }
     stays.margins.right = removed.margins.right;
     stays.right[1] = removed.right[1];
+    stays.corners.right[1] = removed.corners.right[1].slice();
   }
 }
 
@@ -127,6 +135,7 @@ export function parseProgram(data : number[][], w: number, h: number): Program {
   var topBlock: Block;
   var curLineElement: LineElement = new LineElement();
 
+
   curLine.elements.push(new LineElement());
   curLine.elements[0].begining = 0;
   curLine.elements[0].end = w-1;
@@ -155,15 +164,18 @@ export function parseProgram(data : number[][], w: number, h: number): Program {
         } else {
           // update top block
           topBlock.down[0] = leftBlock;
+          topBlock.corners.down[0] = [j, i-1];
           if(topBlock.margins.down < (i-1)) {
             topBlock.margins.down = i-1;
             topBlock.down[1] = leftBlock;
+            topBlock.corners.down[1] = [j, i-1];
           }
           if(leftBlock.inBound.indexOf(topBlock) == -1) leftBlock.inBound.push(topBlock);
           
           // update left block
           if(leftBlock.margins.up == i) {
             leftBlock.up[1] = topBlock;
+            leftBlock.corners.up[1] = [j, i];
             if(topBlock.inBound.indexOf(leftBlock) == -1) topBlock.inBound.push(leftBlock);
           }
         }
@@ -182,8 +194,10 @@ export function parseProgram(data : number[][], w: number, h: number): Program {
             if(leftBlock.margins.right < (j-1)) {
               leftBlock.margins.right = j-1;
               leftBlock.right[0] = topBlock;
+              leftBlock.corners.right[0] = [j-1, i];
             }
             leftBlock.right[1] = topBlock;
+            leftBlock.corners.right[1] = [j-1, i];
             if(topBlock.inBound.indexOf(leftBlock) == -1) topBlock.inBound.push(leftBlock);
           }
 
@@ -192,8 +206,10 @@ export function parseProgram(data : number[][], w: number, h: number): Program {
             if(topBlock.margins.left > j) {
               topBlock.margins.left = j;
               topBlock.left[1] = leftBlock;
+              topBlock.corners.left[1] = [j, i];
             }
             topBlock.left[0] = leftBlock;
+            topBlock.corners.left[0] = [j, i];
             if(leftBlock.inBound.indexOf(topBlock) == -1) leftBlock.inBound.push(topBlock);
 
           }
@@ -204,10 +220,14 @@ export function parseProgram(data : number[][], w: number, h: number): Program {
           newBlock.up[0] = topBlock;
           newBlock.up[1] = topBlock;
           newBlock.margins.up = i;
+          newBlock.corners.up[0] = [j,i];
+          newBlock.corners.up[1] = [j,i];
           topBlock.inBound.push(newBlock);
           newBlock.left[0] = leftBlock;
           newBlock.left[1] = leftBlock;
           newBlock.margins.left = j;
+          newBlock.corners.left[0] = [j,i];
+          newBlock.corners.left[1] = [j,i];
           leftBlock.inBound.push(newBlock);
 
           curLineElement = new LineElement();
@@ -223,16 +243,20 @@ export function parseProgram(data : number[][], w: number, h: number): Program {
             if(leftBlock.margins.right < (j-1)) {
               leftBlock.margins.right = j-1;
               leftBlock.right[0] = newBlock;
+              leftBlock.corners.right[0] = [j-1, i];
             }
             leftBlock.right[1] = newBlock;
+            leftBlock.corners.right[1] = [j-1, i];
             newBlock.inBound.push(leftBlock);
           }
 
           // update top block
           topBlock.down[0] = newBlock;
+          topBlock.corners.down[0] = [j, i-1];
           if(topBlock.margins.down < (i-1)) {
             topBlock.margins.down = i-1;
             topBlock.down[1] = newBlock;
+            topBlock.corners.down[1] = [j, i-1];
           }
           newBlock.inBound.push(topBlock);
 
@@ -242,7 +266,11 @@ export function parseProgram(data : number[][], w: number, h: number): Program {
     }
     // left block is a neighbor of the edge
     leftBlock.right[0] = Black;
+    if (leftBlock.margins.right != (w-1)) {
+      leftBlock.corners.right[0] = [w-1, i];
+    }
     leftBlock.right[1] = Black;
+    leftBlock.corners.right[1] = [w-1, i];
     leftBlock.margins.right = w-1;
     program.lines.push(curLine);
   }
@@ -250,6 +278,8 @@ export function parseProgram(data : number[][], w: number, h: number): Program {
   for(var el of curLine.elements) {
     el.block.down[0] = Black;
     el.block.down[1] = Black;
+    el.block.corners.down[0] = [el.end, h-1];
+    el.block.corners.down[1] = [el.begining, h-1];
     el.block.margins.down = h-1;
   }
 
@@ -300,6 +330,17 @@ export function unifyBlackBlocks(program: Program) {
     if(b.color == 0 && b != Black) toRemove.push(k);
   }
 
+  for(var line of program.lines) {
+    for(var el of line.elements) {
+      if(el.block.color == 0) el.block = Black;
+    }
+  }
+  for(var line of program.columns) {
+    for(var el of line.elements) {
+      if(el.block.color == 0) el.block = Black;
+    }
+  }
+
   //Remove dangling black blocks
   for (var i = toRemove.length -1; i >= 0; i--) {
     program.blocks.splice(toRemove[i],1);
@@ -311,4 +352,45 @@ export function findStartingPosition(program: Program) {
   //Apparently the top left corner must be non black
   //TOFIX handle the case where the corner is white
   program.start = program.lines[0].elements[0].block;
+}
+
+export function buildColumns(program: Program, w: number) {
+ 
+
+  for(var x = 0; x < w; x++) {
+    program.columns.push(new Line());
+  }
+
+
+  for(var y = 0; y < program.lines.length; y++) {
+    var line: Line = program.lines[y];
+    for(var el of line.elements) {
+      for(var x = el.begining; x <= el.end; x++) {
+        var column = program.columns[x];
+        //console.log("column " + x);
+        if((column.elements.length > 0 ) && (el.block == column.elements[column.elements.length-1].block)) {
+          column.elements[column.elements.length-1].end++;
+        } else {
+          var ncolel = new LineElement();
+          ncolel.begining = y;
+          ncolel.end = y;
+          ncolel.block = el.block;
+          column.elements.push(ncolel);
+        }
+      }
+    }
+  }
+}
+
+
+export function buildProgramGraph(data: number[][], w: number, h: number): Program {
+
+  Black.color = -1;
+  var program: Program = parseProgram(data,w,h);
+  buildColumns(program, w);
+  Black.color = 0;
+  unifyBlackBlocks(program);
+  findStartingPosition(program);
+
+  return program;
 }
